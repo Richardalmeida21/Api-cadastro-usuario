@@ -40,7 +40,7 @@ app.put('/users/:id', async (req, res) => {
 
 })
 
-app.delete('/users/id:', async (req, res) => {
+app.delete('/users/:id', async (req, res) => {
 
     await prisma.user.delete({
         where:{
@@ -48,14 +48,28 @@ app.delete('/users/id:', async (req, res) => {
         }
     })
 
-    res.status(200).json({message: 'Usuário deletado com sucesso!'})
+    res.status(200).json({ message: 'Usuário deletado com sucesso!'})
 
 })
 
 
 app.get('/users', async (req, res) => {
 
-   const users = await prisma.user.findMany()
+    let users = []
+
+    if (req.query) {
+        users = await prisma.user.findMany({
+            where: {
+                name: req.query.nome,
+                email: req.query.email,
+                age: req.query.idade
+            }
+        })
+    } else {
+        users = await prisma.user.findMany()
+    }
+
+    
 
     res.status(200).json(users)
 })
